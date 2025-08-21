@@ -33,7 +33,7 @@
     },
   
     // Forward host devices (you already mapped /dev in docker-compose)
-    "runArgs": ["--network=host", "--privileged"],
+    "runArgs": [],
   
     // Mount local workspace into container
     "mounts": [
