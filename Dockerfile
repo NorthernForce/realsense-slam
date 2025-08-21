@@ -79,7 +79,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN rosdep init || true && rosdep update
 
 WORKDIR /robot_ws
-COPY . .
 
 FROM robot-base AS robot-sys
 WORKDIR /robot_ws
