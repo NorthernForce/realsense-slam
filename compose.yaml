@@ -3,6 +3,7 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
+      target: robot-sys
     network_mode: host
     tty: true
     volumes:
@@ -10,3 +11,22 @@ services:
     device_cgroup_rules:
       - "c 81:* rmw"
       - "c 189:* rmw"
+
+  robot-dev:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      target: robot-dev
+    network_mode: host
+    tty: true
+    stdin_open: true
+    environment:
+      - DISPLAY=host.docker.internal:0
+      - QT_X11_NO_MITSHM=1
+    volumes:
+      - .:/robot_ws:cached
+      - /dev:/dev
+    device_cgroup_rules:
+      - "c 81:* rmw"
+      - "c 189:* rmw"
+    command: ["/bin/bash"]
