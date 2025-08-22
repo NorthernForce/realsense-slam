@@ -1,0 +1,42 @@
+{
+    "name": "Robot Dev Environment",
+    "dockerComposeFile": ["../compose.yaml"],
+    "service": "robot-dev",
+    "workspaceFolder": "/robot_ws",
+  
+    // Ensure the right target (dev image) is used
+    "overrideCommand": true,
+  
+    // Features: you can add extra dev tools (e.g., Docker-in-Docker, Python, etc.)
+    "features": {
+      "ghcr.io/devcontainers/features/common-utils:2": {}
+    },
+  
+    // Recommended extensions for ROS development
+    "customizations": {
+      "vscode": {
+        "extensions": [
+          "ms-iot.vscode-ros",
+          "ms-python.python",
+          "ms-python.vscode-pylance",
+          "ms-azuretools.vscode-docker",
+          "twxs.cmake",
+          "ms-vscode.cpptools",
+          "ms-vscode.cpptools-extension-pack"
+        ],
+        "settings": {
+          "python.defaultInterpreterPath": "/usr/bin/python3",
+          "terminal.integrated.shell.linux": "/bin/bash",
+          "ros.distro": "jazzy"
+        }
+      }
+    },
+  
+    // Mount local workspace into container
+    "mounts": [
+      "source=${localWorkspaceFolder},target=/robot_ws,type=bind,consistency=cached"
+    ],
+  
+    "remoteUser": "root"
+  }
+  

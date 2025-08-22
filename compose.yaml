@@ -1,12 +1,35 @@
 services:
-  robot:
+  robot-base:
     build:
       context: .
       dockerfile: ./Dockerfile
+      target: robot-base
     network_mode: host
+    privileged: true # required for imu
+
+  robot-dev:
+    build:
+      context: .
+      additional_contexts:
+        base: service:robot-base
+      dockerfile_inline: |
+        FROM base
+        RUN apt-get update && apt-get install -y --no-install-recommends \
+          git vim nano less tmux \
+          python3-pip python3-colcon-common-extensions \
+          python3-rosdep python3-vcstool \
+          iputils-ping usbutils ros-jazzy-rviz2 \
+          && rm -rf /var/lib/apt/lists/*
+        WORKDIR /robot_ws
+        RUN rosdep init || true && rosdep update
+    network_mode: host
+    privileged: true # required for imu
     tty: true
+    stdin_open: true
+    environment:
+      - DISPLAY=${DISPLAY}
+      - QT_X11_NO_MITSHM=1
     volumes:
-      - /dev:/dev
-    device_cgroup_rules:
-      - "c 81:* rmw"
-      - "c 189:* rmw"
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - /tmp/.docker.xauth:/tmp/.docker.xauth:rw
+    command: ["/bin/bash"]
