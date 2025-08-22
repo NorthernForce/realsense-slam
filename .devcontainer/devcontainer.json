@@ -32,15 +32,11 @@
       }
     },
   
-    // Forward host devices (you already mapped /dev in docker-compose)
-    "runArgs": [],
-  
     // Mount local workspace into container
     "mounts": [
       "source=${localWorkspaceFolder},target=/robot_ws,type=bind,consistency=cached"
     ],
   
-    // Start in bash by default
     "remoteUser": "root"
   }
   
