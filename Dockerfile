@@ -61,3 +61,15 @@ RUN . /opt/ros/${ROS_DISTRO}/setup.sh && colcon build --symlink-install
 RUN . install/local_setup.sh
 CMD ["rs-enumerate-devices"]
 #CMD ["ros2 launch robot vision_launch.py"]
+
+FROM robot-base AS robot-dev
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  git vim nano less tmux \
+  python3-colcon-common-extensions python3-vcstool \
+  iputils-ping usbutils \
+  && rm -rf /var/lib/apt/lists/*
+WORKDIR /rosboard_ws
+RUN git clone https://github.com/dheera/rosboard
+RUN pip install --break-system-packages pyyaml simplejpeg tornado ./rosboard
+WORKDIR /robot_ws

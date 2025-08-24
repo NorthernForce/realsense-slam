@@ -10,19 +10,8 @@ services:
   robot-dev:
     build:
       context: .
-      additional_contexts:
-        base: service:robot-base
-      dockerfile_inline: |
-        FROM base
-        RUN apt-get update && apt-get install -y --no-install-recommends \
-          git vim nano less tmux \
-          python3-colcon-common-extensions python3-vcstool \
-          iputils-ping usbutils \
-          && rm -rf /var/lib/apt/lists/*
-        WORKDIR /rosboard_ws
-        RUN git clone https://github.com/dheera/rosboard
-        RUN pip install --break-system-packages pyyaml simplejpeg tornado ./rosboard
-        WORKDIR /robot_ws
+      dockerfile: ./Dockerfile
+      target: robot-dev
     network_mode: host
     privileged: true # required for imu
     tty: true
