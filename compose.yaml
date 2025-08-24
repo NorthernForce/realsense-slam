@@ -18,4 +18,3 @@ services:
     stdin_open: true
     volumes:
       - ./src/robot:/robot_ws/src/robot:rw
-    command: ["/bin/bash"]

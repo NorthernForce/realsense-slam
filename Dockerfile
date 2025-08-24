@@ -31,8 +31,6 @@ RUN cmake .. \
 RUN make -j$(nproc) all
 RUN make install
 
-# TODO: build realsense-ros package (arm64 requires it)
-
 # =============================
 # Base runtime image
 # =============================
@@ -43,7 +41,8 @@ COPY --from=realsense-build /opt/librs /usr/local/
 COPY --from=realsense-build /ws/librs/config/99-realsense-libusb.rules /etc/udev/rules.d/
 COPY --from=realsense-build /ws/librs/config/99-realsense-d4xx-mipi-dfu.rules /etc/udev/rules.d/
 
-RUN apt-get update && apt-get upgrade -y \
+RUN apt-get update \
+    && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
     libusb-1.0-0 udev python3-pip \
     apt-transport-https ca-certificates \
@@ -51,16 +50,21 @@ RUN apt-get update && apt-get upgrade -y \
     ros-${ROS_DISTRO}-rtabmap-ros \
     && rm -rf /var/lib/apt/lists/*
 
-# TODO: rosdep install dependencies
-RUN pip install --no-cache-dir --break-system-packages robotpy
+RUN pip install --no-cache-dir --break-system-packages pyntcore robotpy-cscore
 
 WORKDIR /robot_ws
-COPY ./src/ ./src/
-RUN rosdep update && rosdep install --from-paths src -y --ignore-src
+COPY src/ src/
+
+WORKDIR /robot_ws/src
+RUN git clone https://github.com/IntelRealSense/realsense-ros.git -b ros2-master
+
+WORKDIR /robot_ws
+RUN apt-get update \
+    && rosdep update \
+    && rosdep install -iy --from-paths src --skip-keys librealsense2 \
+    && rm -rf /var/lib/apt/lists/*
 RUN . /opt/ros/${ROS_DISTRO}/setup.sh && colcon build --symlink-install
-RUN . install/local_setup.sh
-CMD ["rs-enumerate-devices"]
-#CMD ["ros2 launch robot vision_launch.py"]
+CMD . install/local_setup.sh && ros2 launch robot vision_launch.py
 
 FROM robot-base AS robot-dev
 
@@ -69,7 +73,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   python3-colcon-common-extensions python3-vcstool \
   iputils-ping usbutils \
   && rm -rf /var/lib/apt/lists/*
-WORKDIR /rosboard_ws
+WORKDIR /robot_ws/src
 RUN git clone https://github.com/dheera/rosboard
-RUN pip install --break-system-packages pyyaml simplejpeg tornado ./rosboard
+RUN pip install --break-system-packages pyyaml simplejpeg tornado
 WORKDIR /robot_ws
+RUN . /opt/ros/${ROS_DISTRO}/setup.sh && colcon build --symlink-install
+CMD . install/local_setup.sh && bash
