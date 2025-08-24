@@ -17,5 +17,5 @@ services:
     tty: true
     stdin_open: true
     volumes:
-      - .:/robot_ws:rw
+      - ./src/robot:/robot_ws/src/robot:rw
     command: ["/bin/bash"]
