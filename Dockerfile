@@ -45,21 +45,17 @@ COPY --from=realsense-build /ws/librs/config/99-realsense-d4xx-mipi-dfu.rules /e
 
 RUN apt-get update && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
-    libusb-1.0-0 udev \
+    libusb-1.0-0 udev python3-pip \
     apt-transport-https ca-certificates \
     curl software-properties-common \
-    && rm -rf /var/lib/apt/lists/*
-
-# ROS packages needed at runtime
-RUN apt-get update && apt-get install -y \
     ros-${ROS_DISTRO}-rtabmap-ros \
     && rm -rf /var/lib/apt/lists/*
 
-# TODO: install dependencies via rosdep
-
-COPY . .
+# TODO: rosdep install dependencies
+RUN pip install --no-cache-dir --break-system-packages robotpy
 
 WORKDIR /robot_ws
+COPY . .
 RUN . /opt/ros/${ROS_DISTRO}/setup.sh && colcon build --symlink-install
 RUN . install/local_setup.sh
 CMD ["rs-enumerate-devices"]
