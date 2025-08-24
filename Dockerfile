@@ -55,7 +55,8 @@ RUN apt-get update && apt-get upgrade -y \
 RUN pip install --no-cache-dir --break-system-packages robotpy
 
 WORKDIR /robot_ws
-COPY . .
+COPY ./src/ ./src/
+RUN rosdep update && rosdep install --from-paths src -y --ignore-src
 RUN . /opt/ros/${ROS_DISTRO}/setup.sh && colcon build --symlink-install
 RUN . install/local_setup.sh
 CMD ["rs-enumerate-devices"]

@@ -19,13 +19,14 @@ services:
           python3-colcon-common-extensions python3-vcstool \
           iputils-ping usbutils \
           && rm -rf /var/lib/apt/lists/*
-        WORKDIR /robot_ws/src/
+        WORKDIR /rosboard_ws
         RUN git clone https://github.com/dheera/rosboard
-        RUN pip install --break-system-packages pyyaml simplejpeg tornado
+        RUN pip install --break-system-packages pyyaml simplejpeg tornado ./rosboard
         WORKDIR /robot_ws
-        RUN . /opt/ros/jazzy/setup.sh && colcon build --symlink-install
     network_mode: host
     privileged: true # required for imu
     tty: true
     stdin_open: true
+    volumes:
+      - .:/robot_ws:rw
     command: ["/bin/bash"]
