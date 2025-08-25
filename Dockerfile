@@ -52,13 +52,11 @@ RUN apt-get update \
 
 RUN pip install --no-cache-dir --break-system-packages pyntcore robotpy-cscore
 
+WORKDIR /robot_ws/src
+RUN git clone https://github.com/IntelRealSense/realsense-ros.git
+
 WORKDIR /robot_ws
 COPY src/ src/
-
-WORKDIR /robot_ws/src
-RUN git clone https://github.com/IntelRealSense/realsense-ros.git -b ros2-master
-
-WORKDIR /robot_ws
 RUN apt-get update \
     && rosdep update \
     && rosdep install -iy --from-paths src --skip-keys librealsense2 \

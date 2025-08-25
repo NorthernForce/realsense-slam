@@ -22,7 +22,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'robot_bridge = robot.robot_bridge:main'
+            'robot_bridge_node = robot.robot_bridge_node:main'
         ],
     },
 )
